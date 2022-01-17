@@ -1,0 +1,8 @@
+se a = 3 e b = 5 logo c = 8
+se a = 4 e b = 5 logo c = 9
+se c = 8 e d = 5 logo j = 10
+se d = 5 e f = 1 e g = 1 e c = 8 logo h = 5
+se d = 5 logo f = 1
+se a = 3 logo d = 5
+se f = 1 logo g = 1
+se i = 1 logo j = 5 

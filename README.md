@@ -14,6 +14,7 @@ Para o conjunto de regras, as seguintes condições precisam ser atendidas:
 - Por último deve vir a palavra reservada "entao" seguido de uma expressão da forma: "X = Y", sendo X e Y palavras representando chave e valor respectivamente
 - Cada palavra deve estar separada por espaços
 - Uma palavra não deve conter espaços
+- As regras são indexadas a partir do 0
 
 ![Exemplo Regras](Screenshots/rules.png)
 
@@ -29,4 +30,8 @@ Para o conjunto de fatos, as seguintes condições precisam ser atendidas:
 
 Para a execução, deve se executar o arquivo main.py da pasta selecionada, através do comando 'python3 main.py'. Cada pasta contém uma estratégia de encadeamento.
 
-![Exemplo Execução](Screenshots/execution.png)
+Encadeamento para frente:
+![Exemplo encadeamento para frente](Screenshots/forward.png)
+
+Encadeamento para trás:
+![Exemplo encadeamento para trás](Screenshots/backward.png)
