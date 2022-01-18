@@ -1,8 +1,10 @@
 rules_file_path = "./input/rules.txt"
 facts_file_path = "./input/facts.txt"
+hypothesis_file_path = "./input/hypothesis.txt"
 
 val = {}  # valor de um item ou "?" caso seja indefinido
 rules = {}  # dicionário que guarda todas as regras nas quais o item x com valor y está presente como uma clausula
+hypothesis = []  # lista com as hipoteses (consultas)
 rule = []  # lista que guarda todas as regras
 
 
@@ -15,6 +17,10 @@ def check_item(item):
 def set_fact(fact, value):
     check_item(fact)
     val[fact] = value
+
+
+def set_hypothesis(h, value):
+    hypothesis.append((h, value))
 
 
 def add_rule(item, index):
@@ -110,7 +116,7 @@ def bfs():
 
     while queue:
         item = queue.pop(0)
-        check_item(item)
+
         for r in rules[item]:
             if used[r]:
                 continue
@@ -121,10 +127,39 @@ def bfs():
                 queue.append(rule[r][1])
 
 
+def read_hypothesis():
+    lines = []
+
+    with open(hypothesis_file_path) as file:
+        lines = file.readlines()
+
+    for l in lines:
+        h = l.split()
+        set_hypothesis(h[0], h[2])
+
+
+def answer():
+    print()
+
+    for item in hypothesis:
+        check_item(item[0])
+        if val[item[0]] == item[1]:
+            print("Hipotese (" + str(item[0]) +
+                  " = " + str(item[1]) + ") é verdadeira!\n")
+        elif val[item[0]] == "?":
+            print("Hipotese (" + str(item[0]) +
+                  " = " + str(item[1]) + ") é inconclusiva!\n")
+        else:
+            print("Hipotese (" + str(item[0]) +
+                  " = " + str(item[1]) + ") é falsa!\n")
+
+
 def main():
     read_rules()
     read_facts()
     bfs()
+    read_hypothesis()
+    answer()
 
 
 if __name__ == "__main__":

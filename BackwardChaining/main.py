@@ -5,7 +5,7 @@ hypothesis_file_path = "./input/hypothesis.txt"
 
 val = {}  # valor de um item ou "?" caso seja indefinido
 rules = {}  # dicionário que guarda todas as regras nas quais o item x com valor y está presente como uma conclusao
-hypothesis = []  # lista com as hipoteses (objetivos)
+hypothesis = []  # lista com as hipoteses (consultas)
 rule = []  # lista que guarda todas as regras
 
 
