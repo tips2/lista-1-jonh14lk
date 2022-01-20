@@ -2,8 +2,10 @@ rules_file_path = "./input/rules.txt"
 facts_file_path = "./input/facts.txt"
 hypothesis_file_path = "./input/hypothesis.txt"
 
+
 val = {}  # valor de um item ou "?" caso seja indefinido
-rules = {}  # dicionário que guarda todas as regras nas quais o item x está presente como uma condicao
+rules = {}  # dicionário que guarda todas as regras nas quais o item x está presente como uma conclusao
+rules2 = {}  # dicionário que guarda todas as regras nas quais o item x está presente como uma condicao
 hypothesis = []  # lista com as hipoteses (consultas)
 rule = []  # lista que guarda todas as regras
 used = []  # guarda se uma regra ja foi usada ou nao
@@ -14,11 +16,17 @@ def check_item(item):
     if item not in val:
         val[item] = "?"
         rules[item] = []
+        rules2[item] = []
 
 
 def add_rule(item, index):
     check_item(item)
     rules[item].append(index)
+
+
+def add_rule2(item, index):
+    check_item(item)
+    rules2[item].append(index)
 
 
 def set_fact(fact, value):
@@ -90,9 +98,9 @@ def read_rules():
         rule.append((conditions, conclusion))
 
         for c in conditions:
-            add_rule(c[0], index)
+            add_rule2(c[0], index)
 
-        check_item(conclusion[0])
+        add_rule(conclusion[0], index)
         index += 1
 
     print_rules()
@@ -147,7 +155,7 @@ def bfs():  # encadeamento para frente (busca em largura)
     while queue:
         item = queue.pop(0)
 
-        for r in rules[item]:
+        for r in rules2[item]:
             if used[r]:
                 continue
 
@@ -156,6 +164,35 @@ def bfs():  # encadeamento para frente (busca em largura)
                 used[r] = 1
                 print_rule(r)
                 queue.append(rule[r][1][0])
+
+
+def dfs(item):  # encadeamento para tras (busca em profundidade)
+    check_item(item)
+
+    if val[item] != "?":
+        return val[item]  # ja sei o valor desse item
+
+    if len(rules[item]) == 0:
+        global query_item
+        query_item = item
+        return "?"  # inconclusivo
+
+    for r in rules[item]:
+        flag = True
+
+        for child_item in rule[r][0]:
+            current = dfs(child_item[0])
+
+            if current != child_item[1]:
+                flag = False
+
+        if flag == True:
+            used[r] = 1
+            set_fact(item, rule[r][1][1])
+            print_rule(r)
+            break
+
+    return val[item]
 
 
 def do_query():
@@ -175,7 +212,8 @@ def answer():
         result = "?"
 
         while result == "?":
-            bfs()
+            dfs(item[0])  # encadeamento para tras
+            bfs()  # encadeamento para frente
             result = val[item[0]]
 
             if query_item == "?":

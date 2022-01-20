@@ -1,3 +1,3 @@
-valor_rendimento = 30000
+valor_rendimento = 20000
 Eh_bacharel_ou_superior = Sim
-nome_emprego = nao_empresa
+nome_emprego = empresa

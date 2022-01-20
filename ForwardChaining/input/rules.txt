@@ -7,6 +7,5 @@ se Rendimento = Alto entao conceda_emprestimo = Sim
 se Rendimento = Medio e Eh_bacharel_ou_superior = Sim e Tem_Emprego = Sim entao conceda_emprestimo = Sim
 se Rendimento = Medio e Eh_bacharel_ou_superior = Sim e Tem_Emprego = Nao entao continua_a_investigar = Sim
 se Rendimento = Medio e Eh_bacharel_ou_superior = Nao e Tem_Emprego = Nao entao conceda_emprestimo = Nao
-se Rendimento = Medio e Eh_bacharel_ou_superior = Nao e Tem_Emprego = Sim entao continua_a_investigar = Sim
-se Rendimento = Baixo e Referencias = Boas entao continua_a_investigar = Sim
-se Rendimento = Baixo e Referências = Mas entao conceda_emprestimo = Nao
+se Rendimento = Medio e Referencias = Boas entao continua_a_investigar = Sim
+se Rendimento = Baixo e Referencias = Mas entao conceda_emprestimo = Nao

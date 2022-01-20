@@ -4,15 +4,21 @@ hypothesis_file_path = "./input/hypothesis.txt"
 
 
 val = {}  # valor de um item ou "?" caso seja indefinido
-rules = {}  # dicionário que guarda todas as regras nas quais o item x com valor y está presente como uma conclusao
+rules = {}  # dicionário que guarda todas as regras nas quais o item x está presente como uma conclusao
 hypothesis = []  # lista com as hipoteses (consultas)
 rule = []  # lista que guarda todas as regras
+query_item = "?"  # item para ser feito uma consulta (caso necessário)
 
 
 def check_item(item):
     if item not in val:
         val[item] = "?"
         rules[item] = []
+
+
+def add_rule(item, index):
+    check_item(item)
+    rules[item].append(index)
 
 
 def set_fact(fact, value):
@@ -24,9 +30,33 @@ def set_hypothesis(h, value):
     hypothesis.append((h, value))
 
 
-def add_rule(item, index):
-    check_item(item)
-    rules[item].append(index)
+def print_rules():
+    print("Regras:")
+    for item in rule:
+        j = 0
+
+        while j < len(item[0]):
+            print(str(item[0][j][0]) + " = " + str(item[0][j][1]), end="")
+            print("" if j == len(item[0]) - 1 else " e ", end="")
+            j += 1
+
+        print(" entao ", end="")
+        print(str(item[1][0]) + " = " + str(item[1][1]))
+
+    print()
+
+
+def print_facts():
+    print("Fatos Iniciais:")
+    for item in val.keys():
+        if val[item] != "?":
+            print(str(item) + " = " + str(val[item]))
+    print()
+
+
+def print_rule(r):
+    print("Aplicando a regra " + str(r) + ": " +
+          str(rule[r][1][0]) + " = " + str(rule[r][1][1]))
 
 
 def parse_line(words):
@@ -60,24 +90,12 @@ def read_rules():
         rule.append((conditions, conclusion))
 
         for c in conditions:
-            check_item(c)
+            check_item(c[0])
 
-        add_rule(conclusion, index)
+        add_rule(conclusion[0], index)
         index += 1
 
-    print("Regras:")
-    for item in rule:
-        j = 0
-
-        while j < len(item[0]):
-            print(str(item[0][j][0]) + " = " + str(item[0][j][1]), end="")
-            print("" if j == len(item[0]) - 1 else " e ", end="")
-            j += 1
-
-        print(" entao ", end="")
-        print(str(item[1][0]) + " = " + str(item[1][1]))
-
-    print()
+    print_rules()
 
 
 def read_facts():
@@ -90,11 +108,7 @@ def read_facts():
         fact = l.split()
         set_fact(fact[0], fact[2])
 
-    print("Fatos:")
-    for item in val.keys():
-        if val[item] != "?":
-            print(str(item) + " = " + str(val[item]))
-    print()
+    print_facts()
 
 
 def read_hypothesis():
@@ -108,62 +122,62 @@ def read_hypothesis():
         set_hypothesis(h[0], h[2])
 
 
-def print_rule(r):
-    print("Aplicando a regra " + str(r) + ": " +
-          str(rule[r][1][0]) + " = " + str(rule[r][1][1]))
+def dfs(item):  # encadeamento para trás (busca em profundidade)
+    check_item(item)
 
-
-def dfs(item):
-    check_item(item[0])
-
-    if val[item[0]] != "?" and val[item[0]] != item[1]:
-        return 0  # falso
-
-    if val[item[0]] == item[1]:
-        return 2  # verdadeiro
+    if val[item] != "?":
+        return val[item]  # ja sei o valor desse item
 
     if len(rules[item]) == 0:
-        return 1  # inconclusivo
-
-    flag = 1
+        global query_item
+        query_item = item
+        return "?"  # inconclusivo
 
     for r in rules[item]:
-        current_flag = 2
+        flag = True
 
         for child_item in rule[r][0]:
-            current = dfs(child_item)
+            current = dfs(child_item[0])
 
-            if current == 1:
-                val[child_item[0]] = child_item[1]
-                current_flag = 1
-            elif current == 0:
-                current_flag = 0
-                break
+            if current != child_item[1]:
+                flag = False
 
-        if current_flag == 2:
-            val[item[0]] = item[1]
+        if flag == True:
+            set_fact(item, rule[r][1][1])
             print_rule(r)
-
-        if current_flag != 1:
-            flag = current_flag
             break
 
-    return flag
+    return val[item]
+
+
+def do_query():
+    global query_item
+    value = input("\nQual o valor do item: \"" + str(query_item) + "\"? ")
+    set_fact(query_item, value)
+    query_item = "?"
+    print()
 
 
 def answer():
-    for item in hypothesis:
-        flag = dfs(item)
+    global query_item
 
-        if flag == 2:
-            print("Hipotese (" + str(item[0]) +
-                  " = " + str(item[1]) + ") é verdadeira!\n")
-        elif flag == 1:
-            print("Hipotese (" + str(item[0]) +
-                  " = " + str(item[1]) + ") é inconclusiva!\n")
-        else:
-            print("Hipotese (" + str(item[0]) +
-                  " = " + str(item[1]) + ") é falsa!\n")
+    for item in hypothesis:
+        result = "?"
+
+        while result == "?":
+            result = dfs(item[0])
+
+            if query_item == "?":
+                query_item = item[0]
+
+            if result == "?":  # indefinido, ainda nao consegui chegar em uma conclusao
+                do_query()
+            elif result == item[1]:
+                print("\nHipotese (" + str(item[0]) +
+                      " = " + str(item[1]) + ") é verdadeira!\n")
+            else:
+                print("\nHipotese (" + str(item[0]) +
+                      " = " + str(item[1]) + ") é falsa!\n")
 
 
 def main():
